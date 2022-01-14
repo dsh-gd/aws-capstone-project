@@ -1,0 +1,14 @@
+{
+    "item_types": ["office", "game", "photography", "fitness"],
+    "action_types": {
+        "start": {"log_in": 0.5, "open_store": 0.5},
+        "log_in": {"open_store": 1.0},
+        "open_store": {"search_item": 0.85, "view_cart": 0.15},
+        "search_item": {"add_to_cart": 0.6, "open_store": 0.3, "view_cart": 0.1},
+        "add_to_cart": {"view_cart": 0.6, "open_store": 0.4},
+        "view_cart": {"pay": 0.4, "open_store": 0.4, "remove_from_cart": 0.2},
+        "remove_from_cart": {"view_cart": 0.8, "open_store": 0.2},
+        "pay": {"log_out": 0.7, "stop": 0.3},
+        "log_out": {"stop": 1.0}
+    }
+}
