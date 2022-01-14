@@ -1,3 +1,6 @@
+# generator/utils.py
+# Utility functions.
+
 import json
 
 
