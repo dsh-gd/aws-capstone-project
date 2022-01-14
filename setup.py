@@ -20,7 +20,7 @@ setup(
     extras_require={"dev": dev_packages},
     entry_points={
         "console_scripts": [
-            "generator = generator.main:app",
+            "generate = generator.main:app",
         ]
     },
 )
