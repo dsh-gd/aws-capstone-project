@@ -1,5 +1,6 @@
 {
     "item_types": ["office", "game", "photography", "fitness"],
+    "pfi": 0.05,
     "action_types": {
         "start": {"log_in": 0.5, "open_store": 0.5},
         "log_in": {"open_store": 1.0},
