@@ -1,3 +1,6 @@
+# generator/data.py
+# Data generation functions.
+
 import random
 from argparse import Namespace
 
