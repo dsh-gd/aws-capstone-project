@@ -88,3 +88,54 @@ def generate_items(params: Namespace, size: int = 1000) -> list:
         items.append(item)
 
     return items
+
+
+class MarkovChain:
+    def __init__(
+        self,
+        transition_probs: dict,
+        initial_state: str = "start",
+        final_state: str = "stop",
+    ):
+        """
+        Args:
+            transition_probs (dict): The transition probabilities in Markov Chain for the predefined set of action types.
+            initial_state (str): The initial state in Markov Chain. (Default is "start")
+            final_state (str): The final state in Markov Chain. (Default is "stop")
+        """
+        self.transition_probs = transition_probs
+        self.initial_state = initial_state
+        self.final_state = final_state
+
+    def next_state(self, current_state: str) -> str:
+        """Generate the next state in Markov Chain.
+
+        Args:
+            current_state (str): The current state in Markov Chain.
+
+        Returns:
+            The next state in Markov Chain.
+        """
+        possible_states = list(self.transition_probs[current_state].keys())
+        p = list(self.transition_probs[current_state].values())
+        return np.random.choice(possible_states, p=p)
+
+    def generate_states(self) -> list:
+        """Generate a list of states.
+
+        Returns:
+            The list of consecutive states.
+        """
+        current_state = self.initial_state
+
+        states = []
+        while True:
+            next_state = self.next_state(current_state)
+            current_state = next_state
+
+            if current_state == self.final_state:
+                break
+
+            states.append(next_state)
+
+        return states
