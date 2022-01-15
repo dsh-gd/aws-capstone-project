@@ -13,5 +13,9 @@
         "remove_from_cart": {"view_cart": 0.8, "open_store": 0.2},
         "pay": {"log_out": 0.7, "stop": 0.3},
         "log_out": {"stop": 1.0}
-    }
+    },
+    "initial_state": "start",
+    "final_state": "stop",
+    "start_date": "2021-01-01",
+    "end_date": "2021-12-31"
 }
