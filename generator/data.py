@@ -56,7 +56,9 @@ def generate_items(params: Namespace, size: int = 1000) -> list:
     np.random.shuffle(idxs)
     free_idxs = idxs[:n_free]
 
-    prices = random_pareto(size, lower=0.01, upper=50)
+    prices = random_pareto(
+        size, lower=params.price_lower, upper=params.price_upper
+    )
     prices = prices.round(decimals=2)
     prices[free_idxs] = 0.0
 
