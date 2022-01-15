@@ -84,7 +84,6 @@ def generate_items(params: Namespace, size: int = 1000) -> list:
             "price": price,
             "discount": discount,
         }
-
         items.append(item)
 
     return items
@@ -127,15 +126,11 @@ class MarkovChain:
             The list of consecutive states.
         """
         current_state = self.initial_state
-
         states = []
         while True:
             next_state = self.next_state(current_state)
             current_state = next_state
-
             if current_state == self.final_state:
                 break
-
             states.append(next_state)
-
         return states
