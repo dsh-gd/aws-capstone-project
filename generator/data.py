@@ -11,7 +11,7 @@ from faker import Faker
 fake = Faker()
 
 
-def generate_user_ids(size: int = 1000) -> list:
+def generate_users_ids(size: int = 1000) -> list:
     """Generate user ids.
 
     Args:
@@ -20,8 +20,8 @@ def generate_user_ids(size: int = 1000) -> list:
     Returns:
         The list with user ids.
     """
-    user_ids = [fake.uuid4() for _ in range(size)]
-    return user_ids
+    users_ids = [fake.uuid4() for _ in range(size)]
+    return users_ids
 
 
 def random_pareto(
@@ -239,13 +239,13 @@ def generate_flow(params: Namespace, user_id: str, items_ids: list) -> list:
 
 
 def generate_user_actions(
-    params: Namespace, user_ids: list, items_ids: list, size: int = 1000
+    params: Namespace, users_ids: list, items_ids: list, size: int = 1000
 ) -> list:
     """Generate a list of user actions.
 
     Args:
         params (Namespace): Input parameters for operations.
-        user_ids (list): Ids of all possible users.
+        users_ids (list): Ids of all possible users.
         items_ids (list): Ids of all possible items.
         size (int): The number of actions in the list. (Default is 1000)
 
@@ -254,7 +254,7 @@ def generate_user_actions(
     """
     user_actions = []
     while len(user_actions) < size:
-        user_id = random.choice(user_ids)
+        user_id = random.choice(users_ids)
         actions = generate_flow(params, user_id, items_ids)
         user_actions.extend(actions)
     return user_actions
