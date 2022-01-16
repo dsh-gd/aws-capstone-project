@@ -17,5 +17,36 @@
     "initial_state": "start",
     "final_state": "stop",
     "start_date": "2021-01-01",
-    "end_date": "2021-12-31"
+    "end_date": "2021-12-31",
+    "action_results": {
+        "log_in": {
+            "200": "User {} logged in."
+        },
+        "open_store": {
+            "100": "User {} was logged in. Keep buying.",
+            "200": "User {} was not logged in. Start buying."
+        },
+        "search_item": {
+            "200": "Item {} available.",
+            "204": "Item {} not available.",
+            "404": "Item not found."
+        },
+        "view_cart": {},
+        "add_to_cart": {
+            "200": "Add item {} to cart."
+        },
+        "remove_from_cart": {
+            "200": "Item {} removed from cart.",
+            "405": "Cart is empty."
+        },
+        "pay": {
+            "200": "Payment successful.",
+            "400": "Payment failed.",
+            "402": "Payment failed.",
+            "405": "Payment failed. Cart is empty."
+        },
+        "log_out": {
+            "200": "User {} logged out."
+        }
+    }
 }
