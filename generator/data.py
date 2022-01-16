@@ -3,6 +3,7 @@
 
 import random
 from argparse import Namespace
+from datetime import datetime, timedelta
 
 import numpy as np
 from faker import Faker
@@ -134,3 +135,126 @@ class MarkovChain:
                 break
             states.append(next_state)
         return states
+
+
+def generate_flow(params: Namespace, user_id: str, items_ids: list) -> list:
+    """Generate a list of actions in one flow for a specific user.
+
+    Args:
+        params (Namespace): Input parameters for operations.
+        user_id (str): Id of a user.
+        items_ids (list): Ids of all possible items.
+
+    Returns:
+        The list of actions for the flow.
+    """
+    mc = MarkovChain(
+        params.action_types, params.initial_state, params.final_state
+    )
+    action_types = mc.generate_states() + [None]
+
+    start_date = datetime.fromisoformat(params.start_date)
+    end_date = datetime.fromisoformat(params.end_date)
+    start_time = fake.date_time_between(
+        start_date=start_date, end_date=end_date
+    )
+
+    was_logged_in = True
+    found_item_id = None
+    cart = []
+
+    actions = []
+    for current_type, next_type in zip(action_types, action_types[1:]):
+        end_time = start_time + timedelta(minutes=15)
+        t = fake.date_time_between(start_date=start_time, end_date=end_time)
+        event_time = t.strftime("%Y-%m-%d %H:%M:%S")
+        start_time = t + timedelta(minutes=1)
+
+        item_id = random.choice(items_ids)
+
+        results = params.action_results[current_type]
+        if current_type == "log_in":
+            code = 200
+            result = results[str(code)].format(user_id)
+            was_logged_in = False
+        elif current_type == "open_store":
+            if was_logged_in:
+                code = 100
+            else:
+                code = 200
+            result = results[str(code)].format(user_id)
+            was_logged_in = True
+        elif current_type == "search_item":
+            if next_type in ("open_store", "view_cart"):
+                code = random.choice([200, 204, 404])
+            else:
+                found_item_id = item_id
+                code = 200
+            result = results[str(code)].format(item_id)
+        elif current_type == "add_to_cart":
+            cart.append(found_item_id)
+            code = 200
+            result = results[str(code)].format(found_item_id)
+        elif current_type == "view_cart":
+            if cart:
+                code = 200
+            else:
+                code = 204
+            result = str(cart)
+        elif current_type == "remove_from_cart":
+            id_to_remove = None
+            if cart:
+                id_to_remove = random.choice(cart)
+                cart.remove(id_to_remove)
+                code = 200
+            else:
+                code = 405
+            result = results[str(code)].format(id_to_remove)
+        elif current_type == "pay":
+            if cart:
+                if random.random() <= 0.9:
+                    code = 200
+                else:
+                    code = random.choice([400, 402])
+            else:
+                code = 405
+            result = results[str(code)]
+        elif current_type == "log_out":
+            code = 200
+            result = results[str(code)].format(user_id)
+
+        action = {
+            "event_time": event_time,
+            "user_id": user_id,
+            "action_type": current_type,
+            "action_result": result,
+            "status_code": code,
+        }
+        actions.append(action)
+
+        if random.random() <= 0.005:
+            break
+
+    return actions
+
+
+def generate_user_actions(
+    params: Namespace, user_ids: list, items_ids: list, size: int = 1000
+) -> list:
+    """Generate a list of user actions.
+
+    Args:
+        params (Namespace): Input parameters for operations.
+        user_ids (list): Ids of all possible users.
+        items_ids (list): Ids of all possible items.
+        size (int): The number of actions in the list. (Default is 1000)
+
+    Returns:
+        The list of user actions.
+    """
+    user_actions = []
+    while len(user_actions) < size:
+        user_id = random.choice(user_ids)
+        actions = generate_flow(params, user_id, items_ids)
+        user_actions.extend(actions)
+    return user_actions
