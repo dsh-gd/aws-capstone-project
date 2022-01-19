@@ -171,18 +171,17 @@ def generate_flow(params: Namespace, user_id: str, items_ids: list) -> list:
         start_time = t + timedelta(minutes=1)
 
         item_id = random.choice(items_ids)
+        id_to_remove = None
 
         results = params.action_results[current_type]
         if current_type == "log_in":
             code = 200
-            result = results[str(code)].format(user_id)
             was_logged_in = False
         elif current_type == "open_store":
             if was_logged_in:
                 code = 100
             else:
                 code = 200
-            result = results[str(code)].format(user_id)
             was_logged_in = True
         elif current_type == "search_item":
             if next_type in ("open_store", "view_cart"):
@@ -190,17 +189,14 @@ def generate_flow(params: Namespace, user_id: str, items_ids: list) -> list:
             else:
                 found_item_id = item_id
                 code = 200
-            result = results[str(code)].format(item_id)
         elif current_type == "add_to_cart":
             cart.append(found_item_id)
             code = 200
-            result = results[str(code)].format(found_item_id)
         elif current_type == "view_cart":
             if cart:
                 code = 200
             else:
                 code = 204
-            result = str(cart)
         elif current_type == "remove_from_cart":
             id_to_remove = None
             if cart:
@@ -209,19 +205,24 @@ def generate_flow(params: Namespace, user_id: str, items_ids: list) -> list:
                 code = 200
             else:
                 code = 405
-            result = results[str(code)].format(id_to_remove)
         elif current_type == "pay":
             if cart:
-                if random.random() <= 0.9:
-                    code = 200
-                else:
-                    code = random.choice([400, 402])
+                code = int(
+                    np.random.choice([200, 400, 402], p=[0.9, 0.05, 0.05])
+                )
             else:
                 code = 405
-            result = results[str(code)]
         elif current_type == "log_out":
             code = 200
-            result = results[str(code)].format(user_id)
+
+        args = {
+            "user_id": user_id,
+            "item_id": item_id,
+            "found_item_id": found_item_id,
+            "cart": cart,
+            "id_to_remove": id_to_remove,
+        }
+        result = results[str(code)].format(**args)
 
         action = {
             "event_time": event_time,
