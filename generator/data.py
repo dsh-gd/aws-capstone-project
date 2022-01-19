@@ -178,10 +178,7 @@ def generate_flow(params: Namespace, user_id: str, items_ids: list) -> list:
             code = 200
             was_logged_in = False
         elif current_type == "open_store":
-            if was_logged_in:
-                code = 100
-            else:
-                code = 200
+            code = 100 if was_logged_in else 200
             was_logged_in = True
         elif current_type == "search_item":
             if next_type in ("open_store", "view_cart"):
@@ -193,10 +190,7 @@ def generate_flow(params: Namespace, user_id: str, items_ids: list) -> list:
             cart.append(found_item_id)
             code = 200
         elif current_type == "view_cart":
-            if cart:
-                code = 200
-            else:
-                code = 204
+            code = 200 if cart else 204
         elif current_type == "remove_from_cart":
             id_to_remove = None
             if cart:
