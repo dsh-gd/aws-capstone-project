@@ -173,7 +173,6 @@ def generate_flow(params: Namespace, user_id: str, items_ids: list) -> list:
         item_id = random.choice(items_ids)
         id_to_remove = None
 
-        results = params.action_results[current_type]
         if current_type == "log_in":
             code = 200
             was_logged_in = False
@@ -216,7 +215,8 @@ def generate_flow(params: Namespace, user_id: str, items_ids: list) -> list:
             "cart": cart,
             "id_to_remove": id_to_remove,
         }
-        result = results[str(code)].format(**args)
+        action_results = params.action_results[current_type]
+        result = action_results[str(code)].format(**args)
 
         action = {
             "event_time": event_time,
