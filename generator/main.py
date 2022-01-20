@@ -51,6 +51,17 @@ def user_actions(
 
 
 @app.command()
+def user_ids_s3(
+    size: int = 1000,
+    aws_config_fp: Path = Path(config.CONFIG_DIR, "aws_config.json"),
+):
+    user_ids = data.generate_user_ids(size)
+
+    aws_config = Namespace(**utils.load_data(filepath=aws_config_fp))
+    utils.save_data_s3(aws_config, data=user_ids, dtype="user_ids")
+
+
+@app.command()
 def items_s3(
     size: int = 1000,
     params_fp: Path = Path(config.CONFIG_DIR, "generator_params.json"),
