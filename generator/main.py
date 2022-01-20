@@ -23,7 +23,7 @@ def user_ids(
 def items(
     data_fp: Path = Path(config.DATA_DIR, "items.json"),
     size: int = 1000,
-    params_fp: Path = Path(config.CONFIG_DIR, "params.json"),
+    params_fp: Path = Path(config.CONFIG_DIR, "generator_params.json"),
 ):
     params = Namespace(**utils.load_data(filepath=params_fp))
     items = data.generate_items(params, size)
@@ -36,7 +36,7 @@ def user_actions(
     user_ids_fp: Path = Path(config.DATA_DIR, "user_ids.json"),
     items_fp: Path = Path(config.DATA_DIR, "items.json"),
     size: int = 1000,
-    params_fp: Path = Path(config.CONFIG_DIR, "params.json"),
+    params_fp: Path = Path(config.CONFIG_DIR, "generator_params.json"),
 ):
     params = Namespace(**utils.load_data(filepath=params_fp))
 
@@ -48,3 +48,16 @@ def user_actions(
         params, user_ids, items_ids, size
     )
     utils.save_data(user_actions, data_fp)
+
+
+@app.command()
+def items_s3(
+    size: int = 1000,
+    params_fp: Path = Path(config.CONFIG_DIR, "generator_params.json"),
+    aws_config_fp: Path = Path(config.CONFIG_DIR, "aws_config.json"),
+):
+    params = Namespace(**utils.load_data(filepath=params_fp))
+    items = data.generate_items(params, size)
+
+    aws_config = Namespace(**utils.load_data(filepath=aws_config_fp))
+    utils.save_data_s3(aws_config, data=items, dtype="item")
