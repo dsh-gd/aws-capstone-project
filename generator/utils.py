@@ -34,11 +34,11 @@ def load_data(filepath: str) -> list:
     return data
 
 
-def dt_path(dtype: str, ext: str = ".json") -> str:
+def dt_path(prefix: str, ext: str = ".json") -> str:
     """Create the path of the file using the date and time.
 
     Args:
-        dtype (str): A dataset type.
+        prefix (str): A prefix for the path.
         ext (str): An extension of the file. (Default is ".json")
 
     Returns:
@@ -50,17 +50,17 @@ def dt_path(dtype: str, ext: str = ".json") -> str:
     now = datetime.datetime.now()
     date = now.strftime("%Y/%m/%d")
     fname = f"{now.hour}{ext}"
-    path = Path(dtype, date, fname)
+    path = Path(prefix, date, fname)
     return str(path)
 
 
-def save_data_s3(aws_config: Namespace, data: list, dtype: str) -> None:
+def save_data_s3(aws_config: Namespace, data: list, dprefix: str) -> None:
     """Save data to a bucket on S3.
 
     Args:
         aws_config (Namespace): AWS credentials and name of the bucket.
         data (list): A list (or dictionary) to save.
-        dtype (str): A dataset type.
+        dprefix (str): A prefix for the dataset path.
     """
     s3 = boto3.resource(
         "s3",
@@ -68,9 +68,41 @@ def save_data_s3(aws_config: Namespace, data: list, dtype: str) -> None:
         aws_access_key_id=aws_config.aws_access_key_id,
         aws_secret_access_key=aws_config.aws_secret_access_key,
     )
-    path = dt_path(dtype)
+    path = dt_path(dprefix)
     s3_obj = s3.Object(aws_config.bucket_name, path)
     s3_obj.put(
         Body=(bytes(json.dumps(data).encode("UTF-8"))),
         ContentType="application/json",
     )
+
+
+def collect_values_s3(
+    aws_config: Namespace, dprefix: str, key: str = None
+) -> list:
+    """Collect data values from the dataset.
+
+    Args:
+        aws_config (Namespace): AWS credentials and name of the bucket.
+        dprefix (str): A prefix for the dataset path.
+        key (str, optional): A key for collecting values from the dictionaries.
+
+    Returns:
+        A list with the data values.
+    """
+    s3 = boto3.resource(
+        "s3",
+        region_name=aws_config.region_name,
+        aws_access_key_id=aws_config.aws_access_key_id,
+        aws_secret_access_key=aws_config.aws_secret_access_key,
+    )
+    bucket = s3.Bucket(aws_config.bucket_name)
+
+    values = []
+    for obj in bucket.objects.filter(Prefix=dprefix):
+        data = json.load(obj.get()["Body"])
+        if key:
+            values.extend([o[key] for o in data])
+        else:
+            values.extend(data)
+
+    return values
