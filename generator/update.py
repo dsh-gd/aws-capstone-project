@@ -1,3 +1,6 @@
+# generator/update.py
+# Functions for updating data sets.
+
 from argparse import Namespace
 
 from generator import data, utils
