@@ -42,12 +42,19 @@ def dt_path(prefix: str, dt: datetime.datetime = None) -> str:
     return str(path)
 
 
-def latest_dset_path(aws_config: Namespace, dset_type: str) -> str:
-    """Get path of the latest dataset of a given type on the S3.
+def latest_path(
+    aws_config: Namespace,
+    dset_prefix: str,
+    dset_type: str = "",
+    last_path: str = None,
+) -> str:
+    """Get path of the latest dataset on S3.
 
     Args:
         aws_config (Namespace): AWS credentials and name of the bucket.
-        dset_type (str): A type of the dataset.
+        dset_prefix (str): A prefix of the path to the dataset.
+        dset_type (str, optional): Data set file type. (e.g "_available", "_unavailable")
+        last_path (str, optional): The path after which you do not need to search.
 
     Returns:
         Base path of the latest dataset.
@@ -60,13 +67,30 @@ def latest_dset_path(aws_config: Namespace, dset_type: str) -> str:
     )
     bucket = s3.Bucket(aws_config.bucket_name)
 
-    objects = bucket.objects.filter(Prefix=dset_type)
-    paths = sorted([obj.key for obj in objects if obj.key.endswith(".json")])
-    if paths:
-        p = re.match(r"(.+/\d+)(_available|_unavailable)?.json", paths[-1])
-        path = p.groups()[0]
-        return path
-    return None
+    objects = bucket.objects.filter(Prefix=dset_prefix)
+    paths = [
+        obj.key for obj in objects if obj.key.endswith(f"{dset_type}.json")
+    ]
+    paths.sort(reverse=True)
+
+    if not paths:
+        return None
+
+    raw_path = None
+    if not last_path:
+        raw_path = paths[0]
+    else:
+        for p in paths:
+            if p < last_path:
+                raw_path = p
+                break
+
+    if not raw_path:
+        return None
+
+    r = re.match(r"(.+/\d+)(_available|_unavailable)?.json", raw_path)
+    path = r.groups()[0]
+    return path
 
 
 def save_data_s3(aws_config: Namespace, data: list, path: str) -> None:
