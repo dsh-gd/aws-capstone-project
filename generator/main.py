@@ -26,11 +26,11 @@ def items(
     aws_config_fp: Path = Path(config.CONFIG_DIR, "aws_config.json"),
     params_fp: Path = Path(config.CONFIG_DIR, "generator_params.json"),
     size: int = 1000,
-    n_delete: int = 5,
+    n_del: int = 5,
 ):
     aws_config = Namespace(**utils.load_data(filepath=aws_config_fp))
     params = Namespace(**utils.load_data(filepath=params_fp))
-    update.items_dset(aws_config, params, size, n_delete)
+    update.items_dset(aws_config, params, size, n_del)
 
 
 @app.command()
