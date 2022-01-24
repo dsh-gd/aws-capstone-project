@@ -46,7 +46,7 @@ def latest_path(
     aws_config: Namespace,
     dset_prefix: str,
     dset_type: str = "",
-    last_path: str = None,
+    last_dt: datetime.datetime = None,
 ) -> str:
     """Get path of the latest dataset on S3.
 
@@ -54,7 +54,7 @@ def latest_path(
         aws_config (Namespace): AWS credentials and name of the bucket.
         dset_prefix (str): A prefix of the path to the dataset.
         dset_type (str, optional): Data set file type. (e.g "_available", "_unavailable")
-        last_path (str, optional): The path after which you do not need to search.
+        last_dt (datetime.datetime, optional): Date and time after which you do not need to search.
 
     Returns:
         Base path of the latest dataset.
@@ -76,6 +76,7 @@ def latest_path(
     if not paths:
         return None
 
+    last_path = dt_path(dset_prefix, last_dt) if last_dt else None
     raw_path = None
     if not last_path:
         raw_path = paths[0]
