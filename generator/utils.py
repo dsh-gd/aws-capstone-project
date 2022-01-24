@@ -71,7 +71,6 @@ def latest_path(
     paths = [
         obj.key for obj in objects if obj.key.endswith(f"{dset_type}.json")
     ]
-    paths.sort(reverse=True)
 
     if not paths:
         return None
@@ -79,9 +78,9 @@ def latest_path(
     last_path = dt_path(dset_prefix, last_dt) if last_dt else None
     raw_path = None
     if not last_path:
-        raw_path = paths[0]
+        raw_path = paths[-1]
     else:
-        for p in paths:
+        for p in reversed(paths):
             if p < last_path:
                 raw_path = p
                 break
