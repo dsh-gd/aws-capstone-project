@@ -5,10 +5,12 @@ import datetime
 import json
 import random
 import re
-from argparse import Namespace
 from pathlib import Path
 
 import boto3
+
+s3 = boto3.resource("s3")
+bucket_name = "aws-capstone-project-bucket"
 
 
 def load_data(filepath: str) -> dict:
@@ -43,7 +45,6 @@ def dt_path(prefix: str, dt: datetime.datetime = None) -> str:
 
 
 def latest_path(
-    aws_config: Namespace,
     dset_prefix: str,
     dset_type: str = "",
     last_dt: datetime.datetime = None,
@@ -51,7 +52,6 @@ def latest_path(
     """Get path of the latest dataset on S3.
 
     Args:
-        aws_config (Namespace): AWS credentials and name of the bucket.
         dset_prefix (str): A prefix of the path to the dataset.
         dset_type (str, optional): Data set file type. (e.g "_available", "_unavailable")
         last_dt (datetime.datetime, optional): Date and time after which you do not need to search.
@@ -59,13 +59,7 @@ def latest_path(
     Returns:
         Base path of the latest dataset.
     """
-    s3 = boto3.resource(
-        "s3",
-        region_name=aws_config.region_name,
-        aws_access_key_id=aws_config.aws_access_key_id,
-        aws_secret_access_key=aws_config.aws_secret_access_key,
-    )
-    bucket = s3.Bucket(aws_config.bucket_name)
+    bucket = s3.Bucket(bucket_name)
 
     objects = bucket.objects.filter(Prefix=dset_prefix)
     paths = [
@@ -93,44 +87,30 @@ def latest_path(
     return path
 
 
-def save_data_s3(aws_config: Namespace, data: list, path: str) -> None:
+def save_data_s3(data: list, path: str) -> None:
     """Save data to a bucket on S3.
 
     Args:
-        aws_config (Namespace): AWS credentials and name of the bucket.
         data (list): A list (or dictionary) to save.
         path (str): Path to the file.
     """
-    s3 = boto3.resource(
-        "s3",
-        region_name=aws_config.region_name,
-        aws_access_key_id=aws_config.aws_access_key_id,
-        aws_secret_access_key=aws_config.aws_secret_access_key,
-    )
-    obj = s3.Object(aws_config.bucket_name, path)
+    obj = s3.Object(bucket_name, path)
     obj.put(
         Body=(bytes(json.dumps(data).encode("UTF-8"))),
         ContentType="application/json",
     )
 
 
-def load_data_s3(aws_config: Namespace, path: str) -> list:
+def load_data_s3(path: str) -> list:
     """Load data from the bucket on S3.
 
     Args:
-        aws_config (Namespace): AWS credentials and name of the bucket.
         path (str): Path to the file.
 
     Returns:
         A list with the data loaded.
     """
-    s3 = boto3.resource(
-        "s3",
-        region_name=aws_config.region_name,
-        aws_access_key_id=aws_config.aws_access_key_id,
-        aws_secret_access_key=aws_config.aws_secret_access_key,
-    )
-    obj = s3.Object(aws_config.bucket_name, path)
+    obj = s3.Object(bucket_name, path)
     file_content = obj.get()["Body"].read().decode("utf-8")
     data = json.loads(file_content)
     return data
