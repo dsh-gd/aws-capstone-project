@@ -3,6 +3,7 @@
 
 import datetime
 import json
+import os
 import random
 import re
 from pathlib import Path
@@ -10,7 +11,7 @@ from pathlib import Path
 import boto3
 
 s3 = boto3.resource("s3")
-bucket_name = "aws-capstone-project-bucket"
+bucket_name = os.environ["BUCKET"]
 
 
 def load_data(filepath: str) -> dict:
