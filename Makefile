@@ -3,6 +3,7 @@
 help:
 	@echo "Commands:"
 	@echo "venv   : creates development environment."
+	@echo "layer  : creates Lambda layer."
 	@echo "style  : runs style formatting."
 	@echo "clean  : cleans all unecessary files."
 
@@ -13,6 +14,11 @@ venv:
 	source venv/bin/activate && \
 	python -m pip install --upgrade pip setuptools wheel && \
 	python -m pip install -e ".[dev]" --no-cache-dir
+
+# Lambda layer
+layer:
+	chmod +x build_layer.sh
+	./build_layer.sh
 
 # Styling
 .PHONY: style
