@@ -15,10 +15,12 @@ source venv/bin/activate
 pip install --target package/python Faker==10.0.0
 deactivate
 
+cd package
+
 wget $NUMPY
-unzip numpy*.whl -d package/python
+unzip numpy*.whl -d python
 
-zip -r package.zip package
+zip -r ../package.zip python
+zip -g ../package.zip generator_params.json
 
-rm numpy*.whl
-rm -rf package
+rm -rf ../package
