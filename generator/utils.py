@@ -26,18 +26,20 @@ def load_data(filepath: str) -> dict:
     return data
 
 
-def dt_path(prefix: str, dt: datetime.datetime = None) -> str:
+def dt_path(prefix: str, dt: str = None) -> str:
     """Create path for the file using date and time.
 
     Args:
         prefix (str): A prefix for the path.
-        dt (datetime.datetime, optional): Date and time.
+        dt (str, optional): Date and time (ISO format).
 
     Returns:
         The path to the file without extension.
         prefix/year/month/day/hour/timestamp
     """
-    if not dt:
+    if dt:
+        dt = datetime.datetime.fromisoformat(dt)
+    else:
         dt = datetime.datetime.now()
     dt_str = dt.strftime("%Y/%m/%d/%H")
     attempt_id = dt.strftime("%Y%m%d%H%M%S")
@@ -48,14 +50,14 @@ def dt_path(prefix: str, dt: datetime.datetime = None) -> str:
 def latest_path(
     dset_prefix: str,
     dset_type: str = "",
-    last_dt: datetime.datetime = None,
+    last_dt: str = None,
 ) -> str:
     """Get path of the latest dataset on S3.
 
     Args:
         dset_prefix (str): A prefix of the path to the dataset.
         dset_type (str, optional): Data set file type. (e.g "_available", "_unavailable")
-        last_dt (datetime.datetime, optional): Date and time after which you do not need to search.
+        last_dt (str, optional): Date and time after which you do not need to search (ISO format).
 
     Returns:
         Base path of the latest dataset.

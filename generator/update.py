@@ -16,7 +16,7 @@ def user_ids_dset(size: int = 1000) -> None:
 def delete_items(
     n_del: int = 5,
     new_available: list = [],
-    dt: datetime.datetime = None,
+    dt: str = None,
 ) -> None:
     dset_prefix = "items"
     base_lst_path = utils.latest_path(dset_prefix, "_available", dt)
@@ -40,7 +40,7 @@ def items_dset(
     params: Namespace,
     size: int = 1000,
     n_del: int = 5,
-    dt: datetime.datetime = None,
+    dt: str = None,
 ) -> None:
     items = data.generate_items(params, size)
 
