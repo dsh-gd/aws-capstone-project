@@ -1,7 +1,6 @@
 # generator/update.py
 # Functions for updating data sets.
 
-import datetime
 from argparse import Namespace
 
 from generator import data, utils
