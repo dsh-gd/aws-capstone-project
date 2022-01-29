@@ -4,7 +4,7 @@ import data
 import utils
 
 
-def user_ids_dset(size: int):
+def user_ids_dset(size: int = 1000):
     try:
         user_ids = data.generate_user_ids(size)
     except:  # NOQA: E722 (do not use bare 'except')
