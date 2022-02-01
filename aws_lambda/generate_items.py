@@ -48,11 +48,10 @@ def lambda_handler(event, context):
     if not event["body"]:
         status_code, msg = 400, "Parameters not provided."
     else:
-        body = json.loads(event["body"])
         size = body.get("size", 100)
         n_del = body.get("n_del", 5)
         dt = body.get("dt", None)
-        if body["params"]:
+        if "params" in body:
             params = Namespace(**body["params"])
         else:
             params = Namespace(**utils.load_data(filepath=params_fp))
