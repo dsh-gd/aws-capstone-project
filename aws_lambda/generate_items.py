@@ -39,7 +39,7 @@ def items_dset(
     body = response["body"]
 
     if status_code != 200:
-        return status_code, f"delete_items: {body}"
+        return status_code, f"Data wasn't deleted. {body}"
     else:
         return 200, f"{size} items generated, {n_del} items deleted."
 

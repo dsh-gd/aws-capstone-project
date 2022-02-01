@@ -15,8 +15,8 @@ def delete_items(n_del: int = 5, new_available: list = [], dt: str = None):
     delete = utils.to_delete(available, n_del)
     leave = available - delete
 
-    base_path = utils.dt_path(dset_prefix, dt)
     try:
+        base_path = utils.dt_path(dset_prefix, dt)
         utils.save_data_s3(
             list(leave) + new_available, base_path + "_available.json"
         )
