@@ -1,13 +1,10 @@
 import json
 from argparse import Namespace
 
-import boto3
 import data
 import utils
 
 params_fp = "/opt/generator_params.json"
-
-lambda_client = boto3.client("lambda")
 
 
 def items_dset(
@@ -26,22 +23,13 @@ def items_dset(
     except:  # NOQA: E722 (do not use bare 'except')
         return 500, "Data wasn't saved to S3."
 
-    new_available = [item["id"] for item in items]
+    available = [item["id"] for item in items]
+    try:
+        utils.save_data_s3(available, base_path + "_available.json")
+    except:  # NOQA: E722 (do not use bare 'except')
+        return 500, "Data wasn't saved to S3."
 
-    request_body = {"n_del": n_del, "new_available": new_available, "dt": dt}
-    invoke_response = lambda_client.invoke(
-        FunctionName="delete_items",
-        InvocationType="RequestResponse",
-        Payload=json.dumps({"body": json.dumps(request_body)}),
-    )
-    response = json.load(invoke_response["Payload"])
-    status_code = response["statusCode"]
-    body = response["body"]
-
-    if status_code != 200:
-        return status_code, f"Data wasn't deleted. {body}"
-    else:
-        return 200, f"{size} items generated, {n_del} items deleted."
+    return 200, f"{size} items generated."
 
 
 def lambda_handler(event, context):
