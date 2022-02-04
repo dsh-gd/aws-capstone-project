@@ -50,7 +50,7 @@ def lambda_handler(event, context):
         status_code, msg = 400, "Parameters not provided."
     else:
         body = json.loads(event["body"])
-        size = body.get("size", 100)
+        size = body.get("size", 10000)
         if "params" in body:
             params = Namespace(**body["params"])
         else:
