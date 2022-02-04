@@ -17,15 +17,25 @@ def items_dset(
     except:  # NOQA: E722 (do not use bare 'except')
         return 500, "Data wasn't generated."
 
+    dset_prefix = "items"
     try:
-        base_path = utils.dt_path("items", dt)
+        base_path = utils.dt_path(dset_prefix, dt)
         utils.save_data_s3(items, base_path + ".json")
     except:  # NOQA: E722 (do not use bare 'except')
         return 500, "Data wasn't saved to S3."
 
-    available = [item["id"] for item in items]
+    base_lst_path = utils.latest_path(dset_prefix, "_available", dt)
+    if base_lst_path:
+        try:
+            available = utils.load_data_s3(base_lst_path + "_available.json")
+        except:  # NOQA: E722 (do not use bare 'except')
+            return 500, "Can't load available items from S3."
+    else:
+        available = []
+
+    new_available = available + [item["id"] for item in items]
     try:
-        utils.save_data_s3(available, base_path + "_available.json")
+        utils.save_data_s3(new_available, base_path + "_available.json")
     except:  # NOQA: E722 (do not use bare 'except')
         return 500, "Data wasn't saved to S3."
 
