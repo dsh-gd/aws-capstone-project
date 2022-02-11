@@ -162,6 +162,7 @@ def generate_flow(params: Namespace, user_id: str, items_ids: list) -> list:
     was_logged_in = True
     found_item_id = None
     cart = []
+    session_id = fake.uuid4()
 
     actions = []
     for current_type, next_type in zip(action_types, action_types[1:]):
@@ -224,6 +225,7 @@ def generate_flow(params: Namespace, user_id: str, items_ids: list) -> list:
             "action_type": current_type,
             "action_result": result,
             "status_code": code,
+            "session_id": session_id
         }
         actions.append(action)
 
