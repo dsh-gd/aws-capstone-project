@@ -22,6 +22,6 @@ def lambda_handler(event, context):
         status_code, msg = 400, "Parameters not provided."
     else:
         body = json.loads(event["body"])
-        size = body.get("size", 100)
+        size = body.get("size", 1000)
         status_code, msg = user_ids_dset(size)
     return {"statusCode": status_code, "body": json.dumps(msg)}

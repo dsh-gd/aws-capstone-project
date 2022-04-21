@@ -8,7 +8,7 @@ params_fp = "/opt/generator_params.json"
 
 
 def items_dset(
-    params: Namespace, size: int = 1000, n_del: int = 5, dt: str = None
+    params: Namespace, size: int = 1000, dt: str = None
 ):
     try:
         items = data.generate_items(params, size)
@@ -48,11 +48,10 @@ def lambda_handler(event, context):
     else:
         body = json.loads(event["body"])
         size = body.get("size", 100)
-        n_del = body.get("n_del", 5)
         dt = body.get("dt", None)
         if "params" in body:
             params = Namespace(**body["params"])
         else:
             params = Namespace(**utils.load_data(filepath=params_fp))
-        status_code, msg = items_dset(params, size, n_del, dt)
+        status_code, msg = items_dset(params, size, dt)
     return {"statusCode": status_code, "body": json.dumps(msg)}
